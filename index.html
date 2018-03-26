@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Borsa Portföy</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link href="https://fonts.googleapis.com/css?family=Barlow" rel="stylesheet">
+    <link href="style.css" rel="stylesheet" type="text/css"/>
+
+    <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <header class="row margin-b-50">
+        <div class="container">
+            <div class="col-xs-12 col-sm-12 col-md-4">
+                <h1>Borsa Portföy Takip</h1>
+            </div>
+
+            <div class="col-md-4 pull-right text-right">
+                <ul class="nav nav-pills">
+                    <li><a href="#" data-toggle="modal" data-target="#hisse_ekle_modal">Hisse ekle <span class="glyphicon glyphicon-plus"></span></a></li>
+                    <li><a href="#" data-toggle="modal" data-target="#portfoy_ekle_modal">Portföy ekle <span class="glyphicon glyphicon-plus"></span></a></li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                            Kademeler <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="">ASELS</a></li>
+                            <li><a href="">THYAO</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </header>
+</div>
+
+<div class="container">
+    <div id="shares">
+        <shares></shares>
+    </div>
+
+    <template id="share-template">
+        <div class="row">
+            <div v-for="share in followed" class="col-xs-6 col-sm-3 col-md-2">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <div class="panel-title">{{share.share_title}}</div>
+                    </div>
+                    <div class="panel-body"><h3 :id="share.share_code+'_price'">{{share.share_price}} ₺</h3></div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+
+
+
+    <div class="row">
+
+        <div class="col-xs-12 col-sm-12 col-md-8">
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-bordered table-striped table-hover">
+                        <thead>
+                        <tr>
+                            <th width="10%">Hisse</th>
+                            <th width="5%">Lot</th>
+                            <th width="12%" class="visible-md visible-lg">Alış Değeri</th>
+                            <th width="12%">Lot Maliyet</th>
+                            <th width="5%" class="visible-md visible-lg">Komisyon</th>
+                            <th width="15%" class="visible-md visible-lg">Maliyet</th>
+                            <th width="14%">Kar/Zarar</th>
+                            <th width="14%" class="visible-md visible-lg">Alış Tarihi</th>
+                            <th width="13%"></th>
+                        </tr>
+                        </thead>
+                        <tbody id="list">
+
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <td>Yekün</td>
+                            <td id="ylot"></td>
+                            <td class="visible-md visible-lg" id="yalis"></td>
+                            <td id="ylot_maliyet"></td>
+                            <td class="visible-md visible-lg" id="ykomisyon"></td>
+                            <td class="visible-md visible-lg" id="ymaliyet"></td>
+                            <td id="ykarzarar"></td>
+                            <td class="visible-md visible-lg"></td>
+                            <td></td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!--Takipte olduğumuz hisseyi kaydedeceğimiz alan-->
+<div class="modal fade" tabindex="-1" role="dialog" id="hisse_ekle_modal">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Takip Edilecek Hisse</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="hisse_title">Hisse Adı</label>
+                    <input type="text" class="form-control" id="hisse_title" placeholder="Hisse adı">
+                </div>
+                <div class="form-group">
+                    <label for="hisse_code">Hisse Kodu</label>
+                    <input type="text" class="form-control" id="hisse_code" placeholder="Hisse kodu">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" data-dismiss="modal">Vazgeç</button>
+                <button type="button" class="btn btn-success" id="save_hisse">Kaydet</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!--Portföyümüzü kaydedeceğimiz alan-->
+<div class="modal fade" tabindex="-1" role="dialog" id="portfoy_ekle_modal">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Portföy</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="modal_hisse">Hisse</label>
+                    <select class="form-control" id="modal_hisse" placeholder="Hisse adı"></select>
+                </div>
+                <div class="form-group">
+                    <label for="modal_hisse_alis">Alış Fiyatı</label>
+                    <input type="number" class="form-control" id="modal_hisse_alis" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="modal_hisse_lot">Lot</label>
+                    <input type="number" class="form-control" id="modal_hisse_lot" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="modal_hisse_komisyon">Komisyon</label>
+                    <input type="number" class="form-control" id="modal_hisse_komisyon" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="modal_hisse_tarih">Alış Tarihi</label>
+                    <input type="date" class="form-control" id="modal_hisse_tarih">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" data-dismiss="modal">Vazgeç</button>
+                <button type="button" class="btn btn-success" id="save_portfoy">Kaydet</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script src="https://unpkg.com/vue"></script>
+<script src="https://unpkg.com/vuex"></script>
+<script src="data2.js"></script>
+
+
+</body>
+</html>

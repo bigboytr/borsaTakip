@@ -1,0 +1,36 @@
+body {
+  font-family: 'Barlow', sans-serif;
+}
+
+header {
+  box-shadow: #adadad 0px 2px 10px;
+}
+
+.green {
+  color: #549F02;
+}
+.red {
+  color: #F70025;
+}
+
+.margin-b-50 {
+  margin-bottom: 20px;
+}
+
+
+
+/* Bootstrap override */
+.btn {
+  padding: 3px 6px;
+}
+.table td, .table th {
+  padding: 5px;
+}
+.table tfoot {
+  background: #dff0d8;
+}
+
+.h3, h3 {
+  margin: 0;
+  padding: 0;
+}
