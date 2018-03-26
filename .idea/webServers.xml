@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="08d510ef-824f-4137-ba63-4785c27c3963" name="borsa" url="http://gencpro.com/borsa">
+        <fileTransfer host="ftp.gencpro.com" port="21" rootFolder="/public_html/borsa">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="21" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
