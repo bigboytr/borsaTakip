@@ -353,42 +353,71 @@ $(document).ready(function () {
     var euro = $("#euro");
     var euro_change = $("#euro_change");
 
+    function changePercentageColor(node, perc) {
+        if (perc > 0) {
+            if (node.hasClass("red")) {
+                node.removeClass("red");
+            }
+            if (!node.hasClass("green")) {
+                node.addClass("green");
+            }
+        }
+        if (perc < 0) {
+            if (node.hasClass("green")) {
+                node.removeClass("green");
+            }
+            if (!node.hasClass("red")) {
+                node.addClass("red");
+            }
+        }
+    }
+
     // BIST100 verisi
     function bist100data() {
 
-        $.get('https://www.doviz.com/api/v1/indexes/XU100/latest', function (bist) {
+        $.get('./services/bist100.php', function (bist) {
+
+            bist = (JSON).parse(bist);
+
             bist_100.text("").text(parseInt(bist.latest));
             bist_high.text("").text(parseInt(bist.first_seance_highest));
             bist_low.text("").text(parseInt(bist.first_seance_lowest));
-            bist_change.text("").text(bist.change_rate.toFixed(2));
+            bist_change.text("").text(bist.change_rate.toFixed(2)+" %");
 
-            //changePercentageColor(bist_change, bist.change_rate.toFixed(2));
+            changePercentageColor(bist_change, bist.change_rate.toFixed(2));
         });
+
     }
 
     // Döviz verisi
     function dovizData() {
 
-        $.get('https://www.doviz.com/api/v1/currencies/USD/latest', function (veri) {
-            dolar.text("").text(veri.selling.toFixed(4));
-            dolar_change.text("").text(veri.change_rate.toFixed(2));
+        $.get('./services/dolar.php', function (veri) {
 
-            //changePercentageColor(dolar_change, veri.change_rate.toFixed(2));
+            veri = (JSON).parse(veri);
+
+            dolar.text("").text(veri.selling.toFixed(4));
+            dolar_change.text("").text(veri.change_rate.toFixed(2)+" %");
+
+            changePercentageColor(dolar_change, veri.change_rate.toFixed(2));
         });
 
-        $.get('https://www.doviz.com/api/v1/currencies/EUR/latest', function (veri) {
-            euro.text("").text(veri.selling.toFixed(4));
-            euro_change.text("").text(veri.change_rate.toFixed(2));
+        $.get('./services/euro.php', function (veri) {
 
-            //changePercentageColor(euro_change, veri.change_rate.toFixed(2));
+            veri = (JSON).parse(veri);
+
+            euro.text("").text(veri.selling.toFixed(4));
+            euro_change.text("").text(veri.change_rate.toFixed(2)+" %");
+
+            changePercentageColor(euro_change, veri.change_rate.toFixed(2));
         });
     }
 
-    //setInterval(bist100data, 60000);
-    //setInterval(dovizData, 30000);
+    setInterval(bist100data, 60000);
+    setInterval(dovizData, 30000);
 
-    //bist100data();
-    //dovizData();
+    bist100data();
+    dovizData();
 
 });
 
