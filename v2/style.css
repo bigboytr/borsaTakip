@@ -20,14 +20,6 @@ header .change_percantage {
   margin-top: 3px;
 }
 
-.txt-overflow {
-  width: 85%;
-  display: inline-block;
-  overflow: hidden;
-  white-space: nowrap;
-  -ms-text-overflow: ellipsis;
-  text-overflow: ellipsis;
-}
 
 .green {
   color: #549F02;
@@ -41,6 +33,15 @@ header .change_percantage {
 }
 
 
+.txt-overflow {
+  width: 100%;
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  -ms-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+}
+
 
 /* Bootstrap override */
 .btn-xs {
@@ -49,12 +50,16 @@ header .change_percantage {
 .btn {
   padding: 3px 6px;
 }
-.panel-heading {
-  padding: 5px;
+.btn,
+.btn-xs,
+.btn-sm{
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
 }
-.panel-body {
-  padding: 5px;
-}
+.panel-heading,
+.panel-body,
+.panel-footer,
 .table td, .table th {
   padding: 5px;
 }
@@ -79,3 +84,34 @@ p {
 .label {
   font-weight: 300;
 }
+@media (min-width: 768px) {
+  .modal-sm {
+    width: 370px;
+  }
+}
+@media (max-width: 768px) {
+  h1{
+    font-size: 28px;
+  }
+
+  .txt-overflow {
+    width: 70%;
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    -ms-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+  }
+}
+
+/*
+@media all and (orientation: portrait) {
+  body {
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    transform: rotate(90deg);
+  }
+}
+*/

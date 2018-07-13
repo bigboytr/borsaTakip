@@ -10,6 +10,7 @@ $(document).ready(function () {
 
     // vars
     var satis_yapilan_hisse;
+    var alis_yapilan_hisse;
 
     firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
@@ -51,7 +52,9 @@ $(document).ready(function () {
         data: {
             hisseler: {},
             portfoyDetay: {},
-            portfoyDetayKey: ''
+            portfoyDetayKey: '',
+            toplamMaliyetValue: 0,
+            toplamKarZararValue: 0
         },
         methods: {
             hedefKazanc(key) {
@@ -62,6 +65,15 @@ $(document).ready(function () {
                 } else {
                     this.hisseler[key]["hedefKazanc"] = 0;
                 }
+            },
+            hedefKazancKaydet(key) {
+                DB.database.ref(DB.user.uid + "/hisseler/"+key).update({
+                    "hedefSatis": this.hisseler[key]["hedefSatis"],
+                    "hedefKazanc": this.hisseler[key]["hedefKazanc"]
+                }).then(function (result) {
+
+                });
+
             },
             indicator(key) {
                 let hesap = this.hisseler[key]["karZarar"];
@@ -124,6 +136,11 @@ $(document).ready(function () {
                     });
                 }
             },
+            pozisyonEkleModal(key) {
+                alis_yapilan_hisse = key;
+                $("#pozisyonEkle_baslik").text(this.hisseler[key].baslik);
+                $("#portfoy_ekle_modal").modal("show");
+            },
             pozisyonSatisModal(key) {
                 satis_yapilan_hisse = key;
                 $("#pozisyon_sat_modal").modal("show");
@@ -132,6 +149,25 @@ $(document).ready(function () {
                 this.portfoyDetayKey = key;
                 this.portfoyDetay = this.hisseler[key]["portfoy"];
                 $("#portfoy_detay_modal").modal("show");
+            },
+            pozisyonEkle() {
+                var alis = parseFloat($("#modal_hisse_alis").val());
+                var komi = parseFloat($("#modal_hisse_komisyon").val());
+                var lot = parseInt($("#modal_hisse_lot").val());
+                var tarih = $("#modal_hisse_tarih").val();
+
+                DB.database.ref(DB.user.uid + "/hisseler/"+alis_yapilan_hisse+"/portfoy").push({
+                    tip: "alis",
+                    fiyat: alis,
+                    lot: lot,
+                    komisyon: komi,
+                    tarih: tarih
+                }).then(function (result) {
+
+                    $("#portfoy_ekle_modal").modal("hide");
+                    getHisseler();
+
+                });
             },
             pozisyonSil(id) {
                 let portDetayKey = this.portfoyDetayKey;
@@ -185,6 +221,7 @@ $(document).ready(function () {
         },
         computed: {
             maliyet() {
+                this.toplamMaliyetValue = 0;
                 for (var key in this.hisseler) {
                     let aort = 0;
                     let topLot = 0;
@@ -207,15 +244,25 @@ $(document).ready(function () {
                     this.hisseler[key]["maliyet"] = aort.toFixed(2);
                     this.hisseler[key]["alisOrt"] = (aort / topLot).toFixed(2);
                     this.hisseler[key]["toplamLot"] = topLot;
+
+                    if (topLot > 0){
+                        this.toplamMaliyetValue = (parseFloat(this.toplamMaliyetValue) + parseFloat(aort)).toFixed(2);
+                    }
                 }
             },
             karZarar() {
+                this.toplamKarZararValue = 0;
                 for (key in this.hisseler) {
                     let lot = parseInt(this.hisseler[key]["toplamLot"]);
                     let fiyat = parseFloat(this.hisseler[key]["fiyat"]);
                     let maliyet = parseFloat(this.hisseler[key]["maliyet"]);
 
-                    this.hisseler[key]["karZarar"] = ((lot * fiyat) - maliyet).toFixed(2);
+                    let yekun = parseFloat((lot * fiyat) - maliyet).toFixed(2);
+                    this.hisseler[key]["karZarar"] = yekun;
+
+                    if (lot > 0) {
+                        this.toplamKarZararValue = (parseFloat(this.toplamKarZararValue) + parseFloat(yekun)).toFixed(2);
+                    }
                 }
             }
         }
@@ -281,27 +328,6 @@ $(document).ready(function () {
         });
     });
 
-    $("#save_portfoy").on("click", function () {
-        var code = $("#modal_hisse").val();
-        var alis = parseFloat($("#modal_hisse_alis").val());
-        var komi = parseFloat($("#modal_hisse_komisyon").val());
-		var lot = parseInt($("#modal_hisse_lot").val());
-        var tarih = $("#modal_hisse_tarih").val();
-
-        DB.database.ref(DB.user.uid + "/hisseler/"+code+"/portfoy").push({
-            tip: "alis",
-            fiyat: alis,
-            lot: lot,
-            komisyon: komi,
-            tarih: tarih
-        }).then(function (result) {
-
-            $("#portfoy_ekle_modal").modal("hide");
-            getHisseler();
-
-        });
-    });
-
     $("#save_kademe").on("click", function () {
         var title = $("#kademe_title").val();
         var link = $("#kademe_link").val();
@@ -315,14 +341,54 @@ $(document).ready(function () {
         });
     });
 
-    $('#portfoy_ekle_modal').on('show.bs.modal', function () {
 
-        if (app.hisseler == null) {
-            $("#portfoy_ekle_modal").modal("hide");
-            alert("Takip edilecek hisse kaydetmeniz gerekiyor.");
-            return false;
-        }
-    });
+    // ---------------------------------------- //
+    var bist_100 = $("#bist_100");
+    var bist_change = $("#bist_change");
+    var bist_high = $("#bist_high");
+    var bist_low = $("#bist_low");
+
+    var dolar = $("#dolar");
+    var dolar_change = $("#dolar_change");
+    var euro = $("#euro");
+    var euro_change = $("#euro_change");
+
+    // BIST100 verisi
+    function bist100data() {
+
+        $.get('https://www.doviz.com/api/v1/indexes/XU100/latest', function (bist) {
+            bist_100.text("").text(parseInt(bist.latest));
+            bist_high.text("").text(parseInt(bist.first_seance_highest));
+            bist_low.text("").text(parseInt(bist.first_seance_lowest));
+            bist_change.text("").text(bist.change_rate.toFixed(2));
+
+            //changePercentageColor(bist_change, bist.change_rate.toFixed(2));
+        });
+    }
+
+    // Döviz verisi
+    function dovizData() {
+
+        $.get('https://www.doviz.com/api/v1/currencies/USD/latest', function (veri) {
+            dolar.text("").text(veri.selling.toFixed(4));
+            dolar_change.text("").text(veri.change_rate.toFixed(2));
+
+            //changePercentageColor(dolar_change, veri.change_rate.toFixed(2));
+        });
+
+        $.get('https://www.doviz.com/api/v1/currencies/EUR/latest', function (veri) {
+            euro.text("").text(veri.selling.toFixed(4));
+            euro_change.text("").text(veri.change_rate.toFixed(2));
+
+            //changePercentageColor(euro_change, veri.change_rate.toFixed(2));
+        });
+    }
+
+    //setInterval(bist100data, 60000);
+    //setInterval(dovizData, 30000);
+
+    //bist100data();
+    //dovizData();
 
 });
 
