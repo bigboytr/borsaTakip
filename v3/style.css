@@ -1,3 +1,5 @@
+@import "shortcuts.css";
+
 body {
   font-family: 'Barlow', sans-serif;
 }
@@ -5,10 +7,13 @@ body {
 header {
   box-shadow: #adadad 0 2px 10px;
 }
-header .endeksbar {
-  background: #333;
-  color: #fafafa;
+header .menubar {
+  border-top: #2589BD 1px solid;
+  background: #DCDCDC;
   padding: 5px 0;
+}
+header .menubar a {
+  color: #0B2027;
 }
 header .dovizbar {
   background: #444;
@@ -16,7 +21,7 @@ header .dovizbar {
   padding: 5px 0;
 }
 header .change_percantage {
-  font-size: 75%;
+  font-size: 50%;
   margin-top: 3px;
 }
 
@@ -79,7 +84,7 @@ p {
   margin: 0;
 }
 .nav>li>a {
-  padding: 30px 15px;
+  padding: 5px;
 }
 .label {
   font-weight: 300;
