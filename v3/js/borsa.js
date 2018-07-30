@@ -53,6 +53,7 @@ $(document).ready(function () {
             hisseler: {},
             portfoyDetay: {},
             portfoyDetayKey: '',
+            portfoyDetayTitle: '',
             toplamMaliyetValue: 0,
             toplamKarZararValue: 0
         },
@@ -100,12 +101,27 @@ $(document).ready(function () {
 
                 $.each(this.hisseler, function (key, item) {
 
+                    let hisse_price = 0;
+
                     $.get('./services/borsa.php?hisse=' + key, function (price) {
 
-                        //$.get("https://www.doviz.com/api/v1/stocks/"+element.share_code+"/latest", function (data) {
+                        if (price !== "0") {
+                            data[key]["fiyat"] = price;
+                            hisse_price = parseFloat(price);
+                        }
+                    });
 
-                        data[key]["fiyat"] = price;
-                        //});
+                    $.get('./services/bistStock.php?hisse=' + key, function (returning) {
+
+                        let response = (JSON).parse(returning);
+                        data[key]["gunDusuk"] = parseFloat(response.lowest).toFixed(2);
+                        data[key]["gunYuksek"] = parseFloat(response.highest).toFixed(2);
+
+                        if (hisse_price === 0){
+                            // anlık değer 0 TL geldiyse doviz.comdan veriyi alıyoruz.
+                            // Muhtemelen 15dklık gecikmeli veridir.
+                            data[key]["fiyat"] = parseFloat(response.latest).toFixed(2);
+                        }
                     });
 
                 });
@@ -148,6 +164,7 @@ $(document).ready(function () {
             portfoyDetayModal(key) {
                 this.portfoyDetayKey = key;
                 this.portfoyDetay = this.hisseler[key]["portfoy"];
+                this.portfoyDetayTitle = this.hisseler[key]["baslik"];
                 $("#portfoy_detay_modal").modal("show");
             },
             pozisyonEkle() {
@@ -168,6 +185,9 @@ $(document).ready(function () {
                     getHisseler();
 
                 });
+            },
+            pozisyonMaliyet(lot, fiyat) {
+                return parseFloat(lot * fiyat).toFixed(2);
             },
             pozisyonSil(id) {
                 let portDetayKey = this.portfoyDetayKey;
