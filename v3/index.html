@@ -27,7 +27,7 @@
                 <h1>Borsa Portföy</h1>
             </div>
 
-            <div class="col-md-2 padding-10">
+            <div class="col-sm-3 col-md-2 padding-10">
                 <h2>
                     <span id="bist_100"></span>
                     <span class="change_percantage pull-right" id="bist_change"></span>
@@ -35,7 +35,7 @@
                 <h4>Bist100</h4>
             </div>
 
-            <div class="col-md-2 padding-10">
+            <div class="col-sm-3 col-md-2 padding-10">
                 <h2>
                     <span id="dolar"></span>
                     <span class="change_percantage pull-right" id="dolar_change"></span>
@@ -43,7 +43,7 @@
                 <h4>Dolar</h4>
             </div>
 
-            <div class="col-md-2 padding-10">
+            <div class="col-sm-3 col-md-2 padding-10">
                 <h2>
                     <span id="euro"></span>
                     <span class="change_percantage pull-right" id="euro_change"></span>
@@ -299,6 +299,15 @@
                                 </td>
                             </tr>
                             </tbody>
+                            <tfoot>
+                            <tr>
+                                <td colspan="2" align="right">Durum :</td>
+                                <td colspan="4">
+                                    <span v-if="yekun > 0" class="green">{{yekun}} ₺ kârda</span>
+                                    <span v-if="yekun < 0" class="red">{{yekun}} ₺ zararda</span>
+                                </td>
+                            </tr>
+                            </tfoot>
                         </table>
                     </div>
                     <div class="modal-footer">

@@ -41,7 +41,7 @@ var loginIF = (function () {
             // The firebase.auth.AuthCredential type that was used.
             var credential = error.credential;
 
-            failure(error);
+            console.log(errorMessage);
         });
 
     };

@@ -55,7 +55,8 @@ $(document).ready(function () {
             portfoyDetayKey: '',
             portfoyDetayTitle: '',
             toplamMaliyetValue: 0,
-            toplamKarZararValue: 0
+            toplamKarZararValue: 0,
+            yekun: 0
         },
         methods: {
             hedefKazanc(key) {
@@ -165,6 +166,7 @@ $(document).ready(function () {
                 this.portfoyDetayKey = key;
                 this.portfoyDetay = this.hisseler[key]["portfoy"];
                 this.portfoyDetayTitle = this.hisseler[key]["baslik"];
+                this.durum();
                 $("#portfoy_detay_modal").modal("show");
             },
             pozisyonEkle() {
@@ -234,6 +236,29 @@ $(document).ready(function () {
                         });
                     }
                 });
+            },
+            durum() {
+                let alislar = 0;
+                let satislar = 0;
+                let top = 0;
+                let key = this.portfoyDetayKey;
+
+                for (key2 in this.hisseler[key]["portfoy"]) {
+
+                    let item = this.hisseler[key]["portfoy"][key2];
+
+                    let lot = parseInt(item["lot"]);
+                    let fiyat = parseFloat(item["fiyat"]);
+                    let hesap = lot * fiyat;
+
+                    switch (item["tip"]) {
+                        case "alis" : top -= hesap; break;//alislar += hesap; break;
+                        case "satis": top += hesap; break; //satislar += hesap; break;
+                    }
+                }
+
+                //this.yekun = parseFloat(alislar - satislar).toFixed(2);
+                this.yekun = top.toFixed(2);
             }
         },
         mounted: function() {
