@@ -60,7 +60,7 @@
                         <a href="javascript:void(0)" data-toggle="modal" data-target="#hisse_ekle_modal">
                         Hisse ekle <i class="fas fa-plus"></i></a>
                     </li>
-                    <li class="dropdown">
+                    <!--<li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Kademeler <i class="fas fa-caret-down"></i>
                         </a>
                         <span id="kademeler_container"></span>
@@ -72,7 +72,7 @@
                             </ul>
                         </template>
 
-                    </li>
+                    </li>-->
                     <li class="pull-right">
                         <a href="javascript:void(0)" class="text-danger" onclick="loginIF.logout()">
                             Çıkış <i class="fas fa-times"></i>
@@ -94,7 +94,7 @@
                     <tr>
                         <th width="15%">Hisse</th>
                         <th width="7%">Anlık</th>
-                        <th width="10%">Gün İçi</th>
+                        <th width="10%" class="visible-md visible-lg">Gün İçi</th>
                         <th width="5%">Lot</th>
                         <th width="10%" class="visible-md visible-lg">Alış Değeri</th>
                         <th width="8%">Maliyet</th>
@@ -107,9 +107,16 @@
                     <tbody>
                     {{maliyet}}
                     <tr v-for="(hisse, key) in hisseler">
-                        <td>{{hisse.baslik}}</td>
-                        <td><h4>{{hisse.fiyat}} ₺</h4></td>
                         <td>
+                            <a :href="hisse.kademe_link" target="_blank" v-if="hisse.kademe_link !== ''">
+                                <i class="fa fa-external-link-alt"></i> {{hisse.baslik}}
+                            </a>
+                            <span v-else>{{hisse.baslik}}</span>
+                        </td>
+                        <td>
+                            <h4>{{hisse.fiyat}} ₺</h4>
+                        </td>
+                        <td class="visible-md visible-lg">
                             <span class="label label-danger">{{hisse.gunDusuk}} ₺</span>
                             <span class="label label-success">{{hisse.gunYuksek}} ₺</span>
                         </td>
@@ -276,8 +283,8 @@
                             <tr>
                                 <th width="6%">Lot</th>
                                 <th width="10%">Alış Değeri</th>
-                                <th width="10%">Maliyet</th>
-                                <th width="10%">Komisyon</th>
+                                <th width="8%">Maliyet</th>
+                                <th width="7%">Komisyon</th>
                                 <th width="10%">Tarih</th>
                                 <th width="5%"></th>
                             </tr>
@@ -319,6 +326,25 @@
     </div>
 </div>
 
+<!--<div class="container-fluid footer-wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+
+            </div>
+            <div class="col-md-3">
+
+                <ul class="list-group">
+                    <li class="list-group-item">Hakkında</li>
+                    <li class="list-group-item">Kullanım</li>
+                    <li class="list-group-item">Sürüm Notları</li>
+                    <li class="list-group-item">İletişim</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>-->
+
 <!--Takipte olduğumuz hisseyi kaydedeceğimiz alan-->
 <div class="modal fade" tabindex="-1" role="dialog" id="hisse_ekle_modal">
     <div class="modal-dialog modal-sm" role="document">
@@ -346,6 +372,7 @@
 </div><!-- /.modal -->
 
 <!--Kademeleri takip için link ekliyoruz-->
+<!--
 <div class="modal fade" tabindex="-1" role="dialog" id="kademe_ekle_modal">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
@@ -368,9 +395,10 @@
                 <button type="button" class="btn btn-warning" data-dismiss="modal">Vazgeç</button>
                 <button type="button" class="btn btn-success" id="save_kademe">Kaydet</button>
             </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+        </div>&lt;!&ndash; /.modal-content &ndash;&gt;
+    </div>&lt;!&ndash; /.modal-dialog &ndash;&gt;
+</div>&lt;!&ndash; /.modal &ndash;&gt;
+-->
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>

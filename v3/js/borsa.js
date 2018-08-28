@@ -13,16 +13,18 @@ $(document).ready(function () {
     var alis_yapilan_hisse;
 
     firebase.auth().onAuthStateChanged(function(user) {
+
         if (user) {
-            getHisseler();
-            getKademeler();
+
             getHisseListesi();
+            getHisseler();
+
         } else {
             window.location = "login.html";
         }
     });
 
-    var globalKademelerHTML = new Vue({
+    /*var globalKademelerHTML = new Vue({
         el: "#kademeler_container",
         template: "#kademeler-template",
         data: {
@@ -33,7 +35,7 @@ $(document).ready(function () {
                 return _.orderBy(this.links, 'kademe_title')
             }
         }
-    });
+    });*/
 
     var hisseListesiHTML = new Vue({
         el: "#hisse_takip",
@@ -309,6 +311,9 @@ $(document).ready(function () {
                         this.toplamKarZararValue = (parseFloat(this.toplamKarZararValue) + parseFloat(yekun)).toFixed(2);
                     }
                 }
+            },
+            detayKarZarar() {
+
             }
         }
     });
@@ -318,33 +323,16 @@ $(document).ready(function () {
         DB.database.ref(DB.user.uid + '/hisseler').once('value').then(function (snapshot) {
 
             app.hisseler = snapshot.val();
-        });
-    }
 
-    function getKademeler() {
+            $.each(app.hisseler, function (key, item) {
 
-        DB.database.ref('kademeler').once('value').then(function (snapshot) {
-
-            var maxChild = snapshot.numChildren() - 1;
-
-            var obj = [];
-            var i = 0;
-            $.each(snapshot.val(), function (key, element) {
-
-                obj[i] = {
-                    "kademe_title": element.kademe_title,
-                    "kademe_link": element.kademe_link
-                };
-
-                if (i === maxChild) {
-                    globalKademelerHTML.links = obj;
-                } else {
-                    i++;
-                }
+                let link = hisseListesiHTML.hisse_listesi[key]["kademe_link"];
+                item["kademe_link"] = link == undefined ? "" : link;
 
             });
         });
     }
+
 
     function getHisseListesi() {
         DB.database.ref('hisse_listesi').once('value').then(function (snapshot) {
@@ -373,7 +361,7 @@ $(document).ready(function () {
         });
     });
 
-    $("#save_kademe").on("click", function () {
+/*    $("#save_kademe").on("click", function () {
         var title = $("#kademe_title").val();
         var link = $("#kademe_link").val();
 
@@ -384,7 +372,7 @@ $(document).ready(function () {
             $("#kademe_ekle_modal").modal("hide");
             getKademeler();
         });
-    });
+    });*/
 
 
     // ---------------------------------------- //
