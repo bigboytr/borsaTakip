@@ -6,7 +6,7 @@
  * Time: 14:20
  */
 
-$url = 'https://www.doviz.com/api/v1/currencies/USD/latest';
+$url = 'https://api.canlidoviz.com/web/items';
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
 curl_setopt($ch, CURLOPT_HEADER, false);

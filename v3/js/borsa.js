@@ -114,7 +114,7 @@ $(document).ready(function () {
                         }
                     });
 
-                    $.get('./services/bistStock.php?hisse=' + key, function (returning) {
+                    /*$.get('./services/bistStock.php?hisse=' + key, function (returning) {
 
                         let response = (JSON).parse(returning);
                         data[key]["gunDusuk"] = parseFloat(response.lowest).toFixed(2);
@@ -125,7 +125,7 @@ $(document).ready(function () {
                             // Muhtemelen 15dklık gecikmeli veridir.
                             data[key]["fiyat"] = parseFloat(response.latest).toFixed(2);
                         }
-                    });
+                    });*/
 
                 });
             },
@@ -429,13 +429,20 @@ $(document).ready(function () {
 
             veri = (JSON).parse(veri);
 
-            dolar.text("").text(veri.selling.toFixed(4) + " ₺");
-            dolar_change.text("").text(veri.change_rate.toFixed(2)+" %");
+            //dolar
+            dolar.text("").text(veri[0].sellPrice.toFixed(4) + " ₺");
+            dolar_change.text("").text(veri[0].dailyChangePercentage.toFixed(2)+" %");
 
-            changePercentageColor(dolar_change, veri.change_rate.toFixed(2));
+            changePercentageColor(dolar_change, veri[0].dailyChangePercentage.toFixed(2));
+
+            // euro
+            euro.text("").text(veri[1].sellPrice.toFixed(4) + " ₺");
+            euro_change.text("").text(veri[1].dailyChangePercentage.toFixed(2)+" %");
+
+            changePercentageColor(euro_change, veri[1].dailyChangePercentage.toFixed(2));
         });
 
-        $.get('./services/euro.php', function (veri) {
+        /*$.get('./services/euro.php', function (veri) {
 
             veri = (JSON).parse(veri);
 
@@ -443,14 +450,16 @@ $(document).ready(function () {
             euro_change.text("").text(veri.change_rate.toFixed(2)+" %");
 
             changePercentageColor(euro_change, veri.change_rate.toFixed(2));
-        });
+        });*/
     }
 
-    setInterval(bist100data, 20000);
-    setInterval(dovizData, 10000);
+    /*setInterval(bist100data, 20000);
+
 
     bist100data();
-    dovizData();
+    */
 
+  setInterval(dovizData, 10000);
+  dovizData();
 });
 
