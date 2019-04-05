@@ -429,28 +429,21 @@ $(document).ready(function () {
 
             veri = (JSON).parse(veri);
 
+            let dolarPerc = (veri[0].dailyChangePercentage * 100).toFixed(2);
+            let euroPerc = (veri[1].dailyChangePercentage * 100).toFixed(2);
+
             //dolar
             dolar.text("").text(veri[0].sellPrice.toFixed(4) + " ₺");
-            dolar_change.text("").text(veri[0].dailyChangePercentage.toFixed(2)+" %");
+            dolar_change.text("").text(dolarPerc+" %");
 
-            changePercentageColor(dolar_change, veri[0].dailyChangePercentage.toFixed(2));
+            changePercentageColor(dolar_change, dolarPerc);
 
             // euro
             euro.text("").text(veri[1].sellPrice.toFixed(4) + " ₺");
-            euro_change.text("").text(veri[1].dailyChangePercentage.toFixed(2)+" %");
+            euro_change.text("").text(euroPerc+" %");
 
-            changePercentageColor(euro_change, veri[1].dailyChangePercentage.toFixed(2));
+            changePercentageColor(euro_change, euroPerc);
         });
-
-        /*$.get('./services/euro.php', function (veri) {
-
-            veri = (JSON).parse(veri);
-
-            euro.text("").text(veri.selling.toFixed(4) + " ₺");
-            euro_change.text("").text(veri.change_rate.toFixed(2)+" %");
-
-            changePercentageColor(euro_change, veri.change_rate.toFixed(2));
-        });*/
     }
 
     /*setInterval(bist100data, 20000);
