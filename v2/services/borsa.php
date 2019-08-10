@@ -20,6 +20,4 @@ if (!empty($index1)) {
     $html = substr($html, $index1-1, 17);
     $html = strip_tags($html);
     echo str_replace(",", ".", $html);
-} else {
-    echo "0";
 }

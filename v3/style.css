@@ -1,0 +1,143 @@
+@import "shortcuts.css";
+
+body {
+  font-family: 'Barlow', sans-serif;
+  background: #fff url('images/bg.jpg') no-repeat top left;
+  background-size: cover;
+}
+
+header {
+  box-shadow: #adadad 0 2px 10px;
+}
+header .menubar {
+  border-top: #2589BD 1px solid;
+  background: #DCDCDC;
+  padding: 5px 0;
+}
+header .menubar a {
+  color: #0B2027;
+}
+header .dovizbar {
+  background: #444;
+  color: #fafafa;
+  padding: 5px 0;
+}
+header .change_percantage {
+  font-size: 50%;
+  margin-top: 3px;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,0.5);
+}
+
+
+.green {
+  color: #549F02;
+}
+.red {
+  color: #F70025;
+}
+
+.margin-b-50 {
+  margin-bottom: 20px;
+}
+
+
+.txt-overflow {
+  width: 100%;
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  -ms-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+}
+
+
+/* Bootstrap override */
+.btn-xs {
+  padding: 0 2px;
+}
+.btn {
+  padding: 3px 6px;
+}
+.btn,
+.btn-xs,
+.btn-sm{
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+}
+.panel-heading,
+.panel-body,
+.panel-footer,
+.table {
+  background: rgba(255,255,255,0.7);
+}
+.table td, .table th {
+  padding: 5px;
+}
+.table tfoot {
+  background: #dff0d8;
+}
+.h1, h1,
+.h2, h2,
+.h3, h3,
+.h4, h4,
+.h5, h5,
+.h6, h6 {
+  margin: 0;
+  padding: 0;
+}
+p {
+  margin: 0;
+}
+.nav>li>a {
+  padding: 5px;
+}
+.label {
+  font-weight: 300;
+}
+@media (min-width: 768px) {
+  .modal-sm {
+    width: 370px;
+  }
+}
+@media (max-width: 768px) {
+  h1{
+    font-size: 28px;
+  }
+
+  .txt-overflow {
+    width: 70%;
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    -ms-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+  }
+}
+
+/*
+@media all and (orientation: portrait) {
+  body {
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    transform: rotate(90deg);
+  }
+}
+*/
+
+/* Footer */
+.footer-wrapper {
+  border-top: #2589BD 1px solid;
+  padding: 15px 0;
+  background: rgba(0,0,0,0.5);
+}

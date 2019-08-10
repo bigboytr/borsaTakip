@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Borsa Portföy Takip</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link href="https://fonts.googleapis.com/css?family=Barlow" rel="stylesheet">
+
+    <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
+    <script src="js/login.js"></script>
+
+    <style>
+        html, body {
+            height: 100%;
+        }
+        body {
+            background: url("images/login_bg.jpg") no-repeat top left;
+            background-size: 100%;
+        }
+
+        .top-margin {
+            margin-top: 15%;
+        }
+        .google-red {
+            background: #d34836;
+            color: #fff;
+        }
+        .shadow {
+            -webkit-box-shadow: 0 10px 20px 0px #333;
+            -moz-box-shadow: 0 10px 20px 0px #333;
+            box-shadow: 0 10px 20px 0px #333;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="col-xs-10 col-sm-10 col-md-4 col-lg-4 col-xs-push-1 col-sm-push-1 col-md-push-4 col-lg-push-4">
+        <div class="panel panel-default top-margin shadow">
+            <div class="panel-heading">
+                <div class="panel-title">
+                    Borsa Portföy Takip
+                </div>
+            </div>
+            <div class="panel-body">
+                <p>Sisteme gmail hesabınızla giriş yapıp portföyünüzü takip etmeye hemen başlayın.</p>
+                <button class="btn btn-block google-red" onclick="loginIF.authentication()">Google hesabınız ile giriş yapın</button>
+                <p class="top-margin">Sürüm 2.0beta-1</p>
+            </div>
+            <div class="panel-footer">
+                &copy; Gencpro.com - 2018
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Borsa Portföy</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link href="https://fonts.googleapis.com/css?family=Barlow" rel="stylesheet">
+    <link href="style.css" rel="stylesheet" type="text/css"/>
+
+    <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
+
+</head>
+<body>
+<div class="overlay"></div>
+<div class="container-fluid">
+    <header class="row margin-b-50">
+        <div class="container">
+            <div class="col-xs-12 col-sm-12 col-md-6 padding-10">
+                <h1>Borsa Portföy</h1>
+            </div>
+
+            <div class="col-sm-3 col-md-2 padding-10">
+                <h2>
+                    <span id="bist_100"></span>
+                    <span class="change_percantage pull-right" id="bist_change"></span>
+                </h2>
+                <h4>Bist100</h4>
+            </div>
+
+            <div class="col-sm-3 col-md-2 padding-10">
+                <h2>
+                    <span id="dolar"></span>
+                    <span class="change_percantage pull-right" id="dolar_change"></span>
+                </h2>
+                <h4>Dolar</h4>
+            </div>
+
+            <div class="col-sm-3 col-md-2 padding-10">
+                <h2>
+                    <span id="euro"></span>
+                    <span class="change_percantage pull-right" id="euro_change"></span>
+                </h2>
+                <h4>Euro</h4>
+            </div>
+        </div>
+
+
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 menubar">
+            <div class="container">
+                <ul class="nav nav-pills">
+                    <li>
+                        <a href="javascript:void(0)" data-toggle="modal" data-target="#hisse_ekle_modal">
+                        Hisse ekle <i class="fas fa-plus"></i></a>
+                    </li>
+                    <!--<li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Kademeler <i class="fas fa-caret-down"></i>
+                        </a>
+                        <span id="kademeler_container"></span>
+                        <template id="kademeler-template">
+                            <ul class="dropdown-menu">
+                                <li v-for="link in orderedLinks"><a :href="link.kademe_link" target="_blank">{{link.kademe_title}}</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="javascript:void(0)" data-toggle="modal" data-target="#kademe_ekle_modal">Kademe Ekle</a></li>
+                            </ul>
+                        </template>
+
+                    </li>-->
+                    <li class="pull-right">
+                        <a href="javascript:void(0)" class="text-danger" onclick="loginIF.logout()">
+                            Çıkış <i class="fas fa-times"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+</div>
+
+<div class="container">
+    <div id="borsa">
+
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th width="15%">Hisse</th>
+                        <th width="7%">Anlık</th>
+                        <th width="10%" class="visible-md visible-lg">Gün İçi</th>
+                        <th width="5%">Lot</th>
+                        <th width="10%" class="visible-md visible-lg">Alış Değeri</th>
+                        <th width="8%">Maliyet</th>
+                        <th width="8%">Kar/Zarar</th>
+                        <th width="10%" class="visible-md visible-lg">Hedef Satış</th>
+                        <th width="7%" class="visible-md visible-lg">Hedef Kazanç</th>
+                        <th width="10%"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{maliyet}}
+                    <tr v-for="(hisse, key) in hisseler">
+                        <td>
+                            <a :href="hisse.kademe_link" target="_blank" v-if="hisse.kademe_link !== ''">
+                                <i class="fa fa-external-link-alt"></i> {{hisse.baslik}}
+                            </a>
+                            <span v-else>{{hisse.baslik}}</span>
+                        </td>
+                        <td>
+                            <h4>{{hisse.fiyat}} ₺</h4>
+                        </td>
+                        <td class="visible-md visible-lg">
+                            <span class="label label-danger">{{hisse.gunDusuk}} ₺</span>
+                            <span class="label label-success">{{hisse.gunYuksek}} ₺</span>
+                        </td>
+                        <td>
+                            <span v-if="hisse.toplamLot > 0">{{hisse.toplamLot}}</span>
+                            <span v-else>0</span>
+                        </td>
+                        <td class="visible-md visible-lg">
+                            <span v-if="hisse.toplamLot > 0">{{hisse.alisOrt}} ₺</span>
+                            <span v-else>0 ₺</span>
+                        </td>
+                        <td>
+                            <span v-if="hisse.toplamLot > 0">{{hisse.maliyet}} ₺</span>
+                            <span v-else>0 ₺</span>
+                        </td>
+                        <td>{{karZarar}}
+                            <span :class="indicator(key)" v-if="hisse.toplamLot > 0">
+                                {{hisse.karZarar}} ₺
+                                <i :class="icon(key)"></i>
+                            </span>
+                            <span v-else>0 ₺</span>
+                        </td>
+                        <td class="visible-md visible-lg">
+                            <div class="input-group" v-if="hisse.toplamLot > 0">
+                                <input type="number" class="form-control input-sm" v-model="hisse.hedefSatis" @keyUp="hedefKazanc(key)" min="0">
+                                <span class="input-group-btn">
+                                    <button class="btn-sm btn-success" type="button" @click="hedefKazancKaydet(key)"><i class="fas fa-check fa-fw"></i></button>
+                                </span>
+                            </div>
+                        </td>
+                        <td class="visible-md visible-lg">
+                            <span v-if="hisse.toplamLot > 0">{{hisse.hedefKazanc}}</span>
+                            <span v-else>0 ₺</span>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default" @click="pozisyonEkleModal(key)">
+                                    <i class="fas fa-plus fa-fw"></i>
+                                </button>
+                                <button type="button" class="btn btn-default" v-if="hisse.portfoy" @click="pozisyonSatisModal(key)">
+                                    <i class="fas fa-dollar-sign fa-fw"></i>
+                                </button>
+                                <button type="button" class="btn btn-danger" v-if="!hisse.portfoy" @click="hisseSil(key)">
+                                    <i class="fas fa-times fa-fw"></i>
+                                </button>
+                                <button type="button" class="btn btn-default" v-if="hisse.portfoy" @click="portfoyDetayModal(key)">
+                                    <i class="fas fa-eye fa-fw"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <td class="visible-md visible-lg" colspan="5"></td>
+                        <td class="visible-xs visible-sm" colspan="5"></td>
+                        <td>{{toplamMaliyetValue}} ₺</td>
+                        <td class="visible-md visible-lg" colspan="5">{{toplamKarZararValue}} ₺</td>
+                        <td class="visible-xs visible-sm" colspan="5">{{toplamKarZararValue}} ₺</td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!--Portföyümüzü kaydedeceğimiz alan-->
+        <div class="modal fade" tabindex="-1" role="dialog" id="portfoy_ekle_modal">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Portföy</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12">
+                                <div class="form-group">
+                                    <h4 id="pozisyonEkle_baslik"></h4>
+                                    <p class="label label-info">Seçtiğiniz hisseye lot eklemek için alttaki formu doldurunuz.</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-md-6">
+                                <div class="form-group">
+                                    <label for="modal_hisse_alis">Alış Fiyatı</label>
+                                    <input type="number" class="form-control" id="modal_hisse_alis" min="0">
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-md-6">
+                                <div class="form-group">
+                                    <label for="modal_hisse_lot">Lot</label>
+                                    <input type="number" class="form-control" id="modal_hisse_lot" min="0">
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-md-6">
+                                <div class="form-group">
+                                    <label for="modal_hisse_komisyon">Komisyon</label>
+                                    <input type="number" class="form-control" id="modal_hisse_komisyon" min="0" value="0">
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-md-6">
+                                <div class="form-group">
+                                    <label for="modal_hisse_tarih">Alış Tarihi</label>
+                                    <input type="date" class="form-control" id="modal_hisse_tarih">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Vazgeç</button>
+                        <button type="button" class="btn btn-success" @click="pozisyonEkle">Kaydet</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+        <!--Portföyümüzden pozisyon satış alan-->
+        <div class="modal fade" tabindex="-1" role="dialog" id="pozisyon_sat_modal">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Pozisyon Satış</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="modal_hisse_satis">Satış Fiyatı</label>
+                            <input type="number" class="form-control" id="modal_hisse_satis" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="modal_hisse_sat_lot">Lot</label>
+                            <input type="number" class="form-control" id="modal_hisse_sat_lot" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="modal_hisse_sat_komisyon">Komisyon</label>
+                            <input type="number" class="form-control" id="modal_hisse_sat_komisyon" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="modal_hisse_sat_tarih">Satış Tarihi</label>
+                            <input type="date" class="form-control" id="modal_hisse_sat_tarih">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Vazgeç</button>
+                        <button type="button" class="btn btn-success" @click="pozisyonSatis">Kaydet</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+        <!--Portföy detayları-->
+        <div class="modal fade" tabindex="-1" role="dialog" id="portfoy_detay_modal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">{{portfoyDetayTitle}} Portföy Detayları</h4>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-bordered table-hover table-striped">
+                            <thead>
+                            <tr>
+                                <th width="6%">Lot</th>
+                                <th width="10%">Alış Değeri</th>
+                                <th width="8%">Maliyet</th>
+                                <th width="7%">Komisyon</th>
+                                <th width="10%">Tarih</th>
+                                <th width="5%"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="(detay, id) in portfoyDetay">
+                                <td>{{detay.lot}}</td>
+                                <td>
+                                    <span class="red" v-if="detay.tip === 'alis'">-</span>
+                                    <span class="green" v-if="detay.tip === 'satis'">+</span> {{detay.fiyat}} ₺
+                                </td>
+                                <td>{{pozisyonMaliyet(detay.lot, detay.fiyat)}} ₺</td>
+                                <td>{{detay.komisyon}} ₺</td>
+                                <td>{{detay.tarih}}</td>
+                                <td>
+                                    <button type="button" class="btn btn-xs btn-danger" @click="pozisyonSil(id)">
+                                        <i class="fas fa-times fa-fw"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <td colspan="2" align="right">Durum :</td>
+                                <td colspan="4">
+                                    <span v-if="yekun > 0" class="green">{{yekun}} ₺ kârda</span>
+                                    <span v-if="yekun < 0" class="red">{{yekun}} ₺ zararda</span>
+                                </td>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-warning" data-dismiss="modal">Kapat</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+    </div>
+</div>
+
+<!--<div class="container-fluid footer-wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+
+            </div>
+            <div class="col-md-3">
+
+                <ul class="list-group">
+                    <li class="list-group-item">Hakkında</li>
+                    <li class="list-group-item">Kullanım</li>
+                    <li class="list-group-item">Sürüm Notları</li>
+                    <li class="list-group-item">İletişim</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>-->
+
+<!--Takipte olduğumuz hisseyi kaydedeceğimiz alan-->
+<div class="modal fade" tabindex="-1" role="dialog" id="hisse_ekle_modal">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Takip Edilecek Hisse</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="hisse_takip">Hisse</label>
+                    <select class="form-control" id="hisse_takip">
+                        <option v-for="(title, key, index) in orderedList" :value="key">{{title.hisse_ad}}</option>
+                    </select>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" data-dismiss="modal">Vazgeç</button>
+                <button type="button" class="btn btn-success" id="save_hisse">Kaydet</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!--Kademeleri takip için link ekliyoruz-->
+<!--
+<div class="modal fade" tabindex="-1" role="dialog" id="kademe_ekle_modal">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Kademe Link Ekle</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="kademe_title">Hisse Adı</label>
+                    <input type="text" class="form-control" id="kademe_title" placeholder="Hisse adı">
+                </div>
+                <div class="form-group">
+                    <label for="kademe_link">Kademe Linki</label>
+                    <input type="text" class="form-control" id="kademe_link" placeholder="Kademe Linki">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" data-dismiss="modal">Vazgeç</button>
+                <button type="button" class="btn btn-success" id="save_kademe">Kaydet</button>
+            </div>
+        </div>&lt;!&ndash; /.modal-content &ndash;&gt;
+    </div>&lt;!&ndash; /.modal-dialog &ndash;&gt;
+</div>&lt;!&ndash; /.modal &ndash;&gt;
+-->
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+<script src="https://unpkg.com/vue"></script>
+<script src="https://unpkg.com/vuex"></script>
+<script src="js/login.js"></script>
+<script src="js/dbProvider.js"></script>
+<script src="js/borsa.js"></script>
+
+
+
+</body>
+</html>

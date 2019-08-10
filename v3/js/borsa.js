@@ -13,16 +13,18 @@ $(document).ready(function () {
     var alis_yapilan_hisse;
 
     firebase.auth().onAuthStateChanged(function(user) {
+
         if (user) {
-            getHisseler();
-            getKademeler();
+
             getHisseListesi();
+            getHisseler();
+
         } else {
             window.location = "login.html";
         }
     });
 
-    var globalKademelerHTML = new Vue({
+    /*var globalKademelerHTML = new Vue({
         el: "#kademeler_container",
         template: "#kademeler-template",
         data: {
@@ -33,7 +35,7 @@ $(document).ready(function () {
                 return _.orderBy(this.links, 'kademe_title')
             }
         }
-    });
+    });*/
 
     var hisseListesiHTML = new Vue({
         el: "#hisse_takip",
@@ -53,8 +55,10 @@ $(document).ready(function () {
             hisseler: {},
             portfoyDetay: {},
             portfoyDetayKey: '',
+            portfoyDetayTitle: '',
             toplamMaliyetValue: 0,
-            toplamKarZararValue: 0
+            toplamKarZararValue: 0,
+            yekun: 0
         },
         methods: {
             hedefKazanc(key) {
@@ -100,13 +104,28 @@ $(document).ready(function () {
 
                 $.each(this.hisseler, function (key, item) {
 
+                    let hisse_price = 0;
+
                     $.get('./services/borsa.php?hisse=' + key, function (price) {
 
-                        //$.get("https://www.doviz.com/api/v1/stocks/"+element.share_code+"/latest", function (data) {
-
-                        data[key]["fiyat"] = price;
-                        //});
+                        if (price !== "0") {
+                            data[key]["fiyat"] = price;
+                            hisse_price = parseFloat(price);
+                        }
                     });
+
+                    /*$.get('./services/bistStock.php?hisse=' + key, function (returning) {
+
+                        let response = (JSON).parse(returning);
+                        data[key]["gunDusuk"] = parseFloat(response.lowest).toFixed(2);
+                        data[key]["gunYuksek"] = parseFloat(response.highest).toFixed(2);
+
+                        if (hisse_price === 0){
+                            // anlık değer 0 TL geldiyse doviz.comdan veriyi alıyoruz.
+                            // Muhtemelen 15dklık gecikmeli veridir.
+                            data[key]["fiyat"] = parseFloat(response.latest).toFixed(2);
+                        }
+                    });*/
 
                 });
             },
@@ -148,6 +167,8 @@ $(document).ready(function () {
             portfoyDetayModal(key) {
                 this.portfoyDetayKey = key;
                 this.portfoyDetay = this.hisseler[key]["portfoy"];
+                this.portfoyDetayTitle = this.hisseler[key]["baslik"];
+                this.durum();
                 $("#portfoy_detay_modal").modal("show");
             },
             pozisyonEkle() {
@@ -168,6 +189,9 @@ $(document).ready(function () {
                     getHisseler();
 
                 });
+            },
+            pozisyonMaliyet(lot, fiyat) {
+                return parseFloat(lot * fiyat).toFixed(2);
             },
             pozisyonSil(id) {
                 let portDetayKey = this.portfoyDetayKey;
@@ -214,6 +238,29 @@ $(document).ready(function () {
                         });
                     }
                 });
+            },
+            durum() {
+                let alislar = 0;
+                let satislar = 0;
+                let top = 0;
+                let key = this.portfoyDetayKey;
+
+                for (key2 in this.hisseler[key]["portfoy"]) {
+
+                    let item = this.hisseler[key]["portfoy"][key2];
+
+                    let lot = parseInt(item["lot"]);
+                    let fiyat = parseFloat(item["fiyat"]);
+                    let hesap = lot * fiyat;
+
+                    switch (item["tip"]) {
+                        case "alis" : top -= hesap; break;//alislar += hesap; break;
+                        case "satis": top += hesap; break; //satislar += hesap; break;
+                    }
+                }
+
+                //this.yekun = parseFloat(alislar - satislar).toFixed(2);
+                this.yekun = top.toFixed(2);
             }
         },
         mounted: function() {
@@ -264,6 +311,9 @@ $(document).ready(function () {
                         this.toplamKarZararValue = (parseFloat(this.toplamKarZararValue) + parseFloat(yekun)).toFixed(2);
                     }
                 }
+            },
+            detayKarZarar() {
+
             }
         }
     });
@@ -273,33 +323,16 @@ $(document).ready(function () {
         DB.database.ref(DB.user.uid + '/hisseler').once('value').then(function (snapshot) {
 
             app.hisseler = snapshot.val();
-        });
-    }
 
-    function getKademeler() {
+            $.each(app.hisseler, function (key, item) {
 
-        DB.database.ref('kademeler').once('value').then(function (snapshot) {
-
-            var maxChild = snapshot.numChildren() - 1;
-
-            var obj = [];
-            var i = 0;
-            $.each(snapshot.val(), function (key, element) {
-
-                obj[i] = {
-                    "kademe_title": element.kademe_title,
-                    "kademe_link": element.kademe_link
-                };
-
-                if (i === maxChild) {
-                    globalKademelerHTML.links = obj;
-                } else {
-                    i++;
-                }
+                let link = hisseListesiHTML.hisse_listesi[key]["kademe_link"];
+                item["kademe_link"] = link == undefined ? "" : link;
 
             });
         });
     }
+
 
     function getHisseListesi() {
         DB.database.ref('hisse_listesi').once('value').then(function (snapshot) {
@@ -328,7 +361,7 @@ $(document).ready(function () {
         });
     });
 
-    $("#save_kademe").on("click", function () {
+/*    $("#save_kademe").on("click", function () {
         var title = $("#kademe_title").val();
         var link = $("#kademe_link").val();
 
@@ -339,7 +372,7 @@ $(document).ready(function () {
             $("#kademe_ekle_modal").modal("hide");
             getKademeler();
         });
-    });
+    });*/
 
 
     // ---------------------------------------- //
@@ -396,28 +429,30 @@ $(document).ready(function () {
 
             veri = (JSON).parse(veri);
 
-            dolar.text("").text(veri.selling.toFixed(4));
-            dolar_change.text("").text(veri.change_rate.toFixed(2)+" %");
+            let dolarPerc = (veri[0].dailyChangePercentage * 100).toFixed(2);
+            let euroPerc = (veri[1].dailyChangePercentage * 100).toFixed(2);
 
-            changePercentageColor(dolar_change, veri.change_rate.toFixed(2));
-        });
+            //dolar
+            dolar.text("").text(veri[0].sellPrice.toFixed(4) + " ₺");
+            dolar_change.text("").text(dolarPerc+" %");
 
-        $.get('./services/euro.php', function (veri) {
+            changePercentageColor(dolar_change, dolarPerc);
 
-            veri = (JSON).parse(veri);
+            // euro
+            euro.text("").text(veri[1].sellPrice.toFixed(4) + " ₺");
+            euro_change.text("").text(euroPerc+" %");
 
-            euro.text("").text(veri.selling.toFixed(4));
-            euro_change.text("").text(veri.change_rate.toFixed(2)+" %");
-
-            changePercentageColor(euro_change, veri.change_rate.toFixed(2));
+            changePercentageColor(euro_change, euroPerc);
         });
     }
 
-    setInterval(bist100data, 60000);
-    setInterval(dovizData, 30000);
+    /*setInterval(bist100data, 20000);
+
 
     bist100data();
-    dovizData();
+    */
 
+  setInterval(dovizData, 10000);
+  dovizData();
 });
 
