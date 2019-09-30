@@ -27,7 +27,7 @@
                 <h1>Borsa Portföy</h1>
             </div>
 
-            <div class="col-sm-3 col-md-2 padding-10">
+            <!--<div class="col-sm-3 col-md-2 padding-10">
                 <h2>
                     <span id="bist_100"></span>
                     <span class="change_percantage pull-right" id="bist_change"></span>
@@ -49,7 +49,7 @@
                     <span class="change_percantage pull-right" id="euro_change"></span>
                 </h2>
                 <h4>Euro</h4>
-            </div>
+            </div>-->
         </div>
 
 
@@ -94,7 +94,7 @@
                     <tr>
                         <th width="15%">Hisse</th>
                         <th width="7%">Anlık</th>
-                        <th width="10%" class="visible-md visible-lg">Gün İçi</th>
+                        <!--<th width="10%" class="visible-md visible-lg">Gün İçi</th>-->
                         <th width="5%">Lot</th>
                         <th width="10%" class="visible-md visible-lg">Alış Değeri</th>
                         <th width="8%">Maliyet</th>
@@ -116,10 +116,10 @@
                         <td>
                             <h4>{{hisse.fiyat}} ₺</h4>
                         </td>
-                        <td class="visible-md visible-lg">
-                            <span class="label label-danger">{{hisse.gunDusuk}} ₺</span>
-                            <span class="label label-success">{{hisse.gunYuksek}} ₺</span>
-                        </td>
+                        <!--<td class="visible-md visible-lg">-->
+                            <!--<span class="label label-danger">{{hisse.gunDusuk}} ₺</span>-->
+                            <!--<span class="label label-success">{{hisse.gunYuksek}} ₺</span>-->
+                        <!--</td>-->
                         <td>
                             <span v-if="hisse.toplamLot > 0">{{hisse.toplamLot}}</span>
                             <span v-else>0</span>
