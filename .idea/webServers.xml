@@ -5,7 +5,7 @@
       <webServer id="08d510ef-824f-4137-ba63-4785c27c3963" name="borsa" url="http://gencpro.com/borsa/v3">
         <fileTransfer host="ftp.gencpro.com" port="21" rootFolder="/public_html/borsa">
           <advancedOptions>
-            <advancedOptions dataProtectionLevel="Private" />
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" />
           </advancedOptions>
           <option name="port" value="21" />
         </fileTransfer>

@@ -452,7 +452,7 @@ $(document).ready(function () {
     bist100data();
     */
 
-  setInterval(dovizData, 10000);
-  dovizData();
+  //setInterval(dovizData, 10000);
+  //dovizData();
 });
 
